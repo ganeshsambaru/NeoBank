@@ -36,16 +36,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ---------------------
-// CORS configuration
-// ---------------------
+
+// ✅ CORS: allow Angular + React
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular",
-        policy => policy
-            .WithOrigins("http://localhost:4200") // Angular dev URL
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -67,7 +65,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 // Apply CORS before Authorization
-app.UseCors("AllowAngular");
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
