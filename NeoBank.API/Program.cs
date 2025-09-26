@@ -5,6 +5,8 @@ using NeoBank.Api.Repositories.Implementations;
 using NeoBank.Api.Services.Interfaces;
 using NeoBank.Api.Services.Implementations;
 using Serilog;
+using NeoBankApi.Repositories;
+using NeoBankApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,23 +21,30 @@ builder.Host.UseSerilog((ctx, lc) => lc
 // Add services to the container
 // ---------------------
 
-// EF Core DbContext (change connection string in appsettings.json)
+// EF Core DbContext (connection string in appsettings.json)
 builder.Services.AddDbContext<NeoBankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Repositories
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-// (later add IAccountRepository, etc.)
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 // Services
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-// (later add IAccountService, etc.)
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 // Controllers & Swagger
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        // prevents JSON self-referencing loop errors
+        o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 // ✅ CORS: allow Angular + React
 builder.Services.AddCors(options =>
@@ -52,19 +61,17 @@ var app = builder.Build();
 // Configure HTTP pipeline
 // ---------------------
 
-// Swagger in development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Custom global exception middleware
+// global exception middleware — put early so it catches errors
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
-// Apply CORS before Authorization
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();

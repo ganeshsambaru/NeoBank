@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeoBank.Api.Data;
 
@@ -11,9 +12,11 @@ using NeoBank.Api.Data;
 namespace NeoBank.API.Migrations
 {
     [DbContext(typeof(NeoBankDbContext))]
-    partial class NeoBankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250926081119_AddTransactionTable")]
+    partial class AddTransactionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,9 +48,14 @@ namespace NeoBank.API.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CustomerId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("CustomerId1");
 
                     b.ToTable("Accounts");
                 });
@@ -114,10 +122,14 @@ namespace NeoBank.API.Migrations
             modelBuilder.Entity("Account", b =>
                 {
                     b.HasOne("NeoBank.Api.Models.Entities.Customer", "Customer")
-                        .WithMany("Accounts")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("NeoBank.Api.Models.Entities.Customer", null)
+                        .WithMany("Accounts")
+                        .HasForeignKey("CustomerId1");
 
                     b.Navigation("Customer");
                 });
