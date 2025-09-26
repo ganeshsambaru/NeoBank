@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NeoBank.API.Models.DTOs;
-using NeoBank.Api.Models.Entities;
 using NeoBank.Api.Services.Interfaces;
+using NeoBank.API.Models.DTOs;
 
 namespace NeoBank.Api.Controllers
 {
@@ -17,60 +16,57 @@ namespace NeoBank.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() =>
-            Ok(await _service.GetAllAsync());
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAll()
         {
-            var account = await _service.GetByIdAsync(id);
-            if (account == null) return NotFound();
-            return Ok(account);
+            var accounts = await _service.GetAllAsync();
+            return Ok(accounts);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AccountDto>> GetById(int id)
+        {
+            var dto = await _service.GetByIdAsync(id);
+            if (dto == null)
+                return NotFound();
+
+            return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] AccountDto dto)
+        public async Task<ActionResult<AccountDto>> Create([FromBody] AccountDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var account = new Account
-            {
-                AccountNumber = dto.AccountNumber,
-                AccountType = dto.AccountType,
-                Balance = dto.Balance,
-                CustomerId = dto.CustomerId
-                // DO NOT set Customer navigation
-            };
+            var created = await _service.AddAsync(dto);
 
-            await _service.AddAsync(account);
-            // Return dto with new Id
-            dto.Id = account.Id;
-
-            return CreatedAtAction(nameof(GetById), new { id = account.Id }, dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] AccountDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var account = new Account
-            {
-                Id = id,
-                AccountNumber = dto.AccountNumber,
-                AccountType = dto.AccountType,
-                Balance = dto.Balance,
-                CustomerId = dto.CustomerId
-            };
+            var existing = await _service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
 
-            await _service.UpdateAsync(id, account);
+            await _service.UpdateAsync(id, dto);
+
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            var existing = await _service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+
             await _service.DeleteAsync(id);
+
             return NoContent();
         }
     }

@@ -1,13 +1,13 @@
-﻿using NeoBank.Api.Models.Entities;
+﻿using NeoBank.API.Models.DTOs;
 
 namespace NeoBank.Api.Services.Interfaces
 {
     public interface IAccountService
     {
-        Task<IEnumerable<Account>> GetAllAsync();
-        Task<Account?> GetByIdAsync(int id);
-        Task AddAsync(Account account);
-        Task UpdateAsync(int id, Account account);
+        Task<IEnumerable<AccountDto>> GetAllAsync();
+        Task<AccountDto?> GetByIdAsync(int id);
+        Task<AccountDto> AddAsync(AccountDto dto);
+        Task UpdateAsync(int id, AccountDto dto);
         Task DeleteAsync(int id);
     }
 }
