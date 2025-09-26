@@ -9,5 +9,8 @@
         public string Address { get; set; }
 
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
+
+        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+
     }
 }

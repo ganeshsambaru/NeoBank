@@ -2,7 +2,6 @@
 using NeoBank.Api.Models.Entities;
 using NeoBank.Api.Repositories.Interfaces;
 using NeoBank.Api.Services.Interfaces;
-using NeoBank.API.Models.Entities;
 
 namespace NeoBank.Api.Services.Implementations
 {

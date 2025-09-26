@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeoBank.Api.Data;
 
@@ -11,9 +12,11 @@ using NeoBank.Api.Data;
 namespace NeoBank.API.Migrations
 {
     [DbContext(typeof(NeoBankDbContext))]
-    partial class NeoBankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250926151059_AddLoansTable")]
+    partial class AddLoansTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -7,6 +7,10 @@ using NeoBank.Api.Services.Implementations;
 using Serilog;
 using NeoBankApi.Repositories;
 using NeoBankApi.Services;
+using NeoBank.API.Repositories.Interfaces;
+using NeoBank.API.Repositories.Implementations;
+using NeoBank.API.Services.Interfaces;
+using NeoBank.API.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +33,13 @@ builder.Services.AddDbContext<NeoBankDbContext>(options =>
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
 // Services
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ILoanService, LoanService>();
 
 // Controllers & Swagger
 builder.Services.AddControllers()
