@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NeoBank.Api.Models;
 using NeoBank.Api.Models.Entities;
 using NeoBankApi.Models;
 
@@ -11,9 +12,12 @@ namespace NeoBank.Api.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-
-        // New Loans table
         public DbSet<Loan> Loans { get; set; }
+        public DbSet<User> Users { get; set; }
+
+
+       
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,14 +28,14 @@ namespace NeoBank.Api.Data
                 .HasOne(a => a.Customer)
                 .WithMany(c => c.Accounts)
                 .HasForeignKey(a => a.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Customer–Loan: one Customer has many Loans
             modelBuilder.Entity<Loan>()
                 .HasOne(l => l.Customer)
                 .WithMany(c => c.Loans)           // <-- add Loans collection to Customer entity
                 .HasForeignKey(l => l.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
